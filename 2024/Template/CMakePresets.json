@@ -1,0 +1,250 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "configure-base",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/out/install/${presetName}",
+                "CMAKE_CXX_STANDARD": "23",
+                "CMAKE_CXX_STANDARD_REQUIRED": "YES",
+                "CMAKE_CXX_EXTENSIONS": "NO"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-linux-clang",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/clang-17",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++-17"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-linux-gcc",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-windows-gcc-ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "D:/MinGW/x86_64-12.2.0-release-win32-seh-msvcrt-rt_v10-rev2/mingw64/bin/gcc.exe",
+                "CMAKE_CXX_COMPILER": "D:/MinGW/x86_64-12.2.0-release-win32-seh-msvcrt-rt_v10-rev2/mingw64/bin/g++.exe",
+                "CMAKE_GENERATOR:INTERNAL": "Ninja",
+                "CMAKE_CXX_FLAGS_INIT": "-Wall -std=c++23"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "hidden": true
+        },
+        {
+            "name": "configure-windows-clang-ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "G:/Program Files/LLVM/bin/clang.exe",
+                "CMAKE_CXX_COMPILER": "G:/Program Files/LLVM/bin/clang++.exe",
+                "CMAKE_GENERATOR:INTERNAL": "Ninja",
+                "CMAKE_CXX_FLAGS_INIT": "-Wall -std=c++23"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "hidden": true
+        },
+        {
+            "name": "Linux-Clang-Debug",
+            "displayName": "Linux Clang Debug",
+            "description": "Clang-17",
+            "inherits": [
+                "configure-base",
+                "configure-linux-clang",
+                "configure-debug"
+            ]
+        },
+        {
+            "name": "Linux-Clang-Release",
+            "displayName": "Linux Clang Release",
+            "description": "Clang-17",
+            "inherits": [
+                "configure-base",
+                "configure-linux-clang",
+                "configure-release"
+            ]
+        },
+        {
+            "name": "Linux-Gcc-Debug",
+            "displayName": "Linux Gcc Debug",
+            "description": "Gcc",
+            "inherits": [
+                "configure-base",
+                "configure-linux-gcc",
+                "configure-debug"
+            ]
+        },
+        {
+            "name": "Linux-Gcc-Release",
+            "displayName": "Linux Gcc Release",
+            "description": "Gcc",
+            "inherits": [
+                "configure-base",
+                "configure-linux-gcc",
+                "configure-release"
+            ]
+        },
+        {
+            "name": "Windows-Clang-Debug",
+            "displayName": "Windows Clang Debug",
+            "description": "Clang-17",
+            "inherits": [
+                "configure-base",
+                "configure-windows-clang-ninja",
+                "configure-debug"
+            ]
+        },
+        {
+            "name": "Windows-Clang-Release",
+            "displayName": "Windows Clang Release",
+            "description": "Clang-17",
+            "inherits": [
+                "configure-base",
+                "configure-windows-clang-ninja",
+                "configure-release"
+            ]
+        },
+        {
+            "name": "Windows-Gcc-Debug",
+            "displayName": "Windows Gcc Debug",
+            "description": "Gcc",
+            "inherits": [
+                "configure-base",
+                "configure-windows-gcc-ninja",
+                "configure-debug"
+            ]
+        },
+        {
+            "name": "Windows-Gcc-Release",
+            "displayName": "Windows Gcc Release",
+            "description": "Gcc",
+            "inherits": [
+                "configure-base",
+                "configure-windows-gcc-ninja",
+                "configure-release"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-linux-only",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "hidden": true
+        },
+        {
+            "name": "build-windows-only",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "hidden": true
+        },
+        {
+            "name": "Linux-Clang-Debug",
+            "displayName": "Linux Debug Preset",
+            "configurePreset": "Linux-Clang-Debug",
+            "inherits": [
+                "build-linux-only"
+            ]
+        },
+        {
+            "name": "Linux-Clang-Release",
+            "displayName": "Linux Release Preset",
+            "configurePreset": "Linux-Clang-Release",
+            "inherits": [
+                "build-linux-only"
+            ]
+        },
+        {
+            "name": "Windows-Clang-Debug",
+            "displayName": "Windows Debug Preset",
+            "configurePreset": "Windows-Clang-Debug",
+            "inherits": [
+                "build-windows-only"
+            ]
+        },
+        {
+            "name": "Windows-Clang-Release",
+            "displayName": "Windows Release Preset",
+            "configurePreset": "Windows-Clang-Release",
+            "inherits": [
+                "build-windows-only"
+            ]
+        },
+        {
+            "name": "Linux-Gcc-Debug",
+            "displayName": "Linux Debug Preset",
+            "configurePreset": "Linux-Gcc-Debug",
+            "inherits": [
+                "build-linux-only"
+            ]
+        },
+        {
+            "name": "Linux-Gcc-Release",
+            "displayName": "Linux Release Preset",
+            "configurePreset": "Linux-Gcc-Release",
+            "inherits": [
+                "build-linux-only"
+            ]
+        },
+        {
+            "name": "Windows-Gcc-Debug",
+            "displayName": "Windows Debug Preset",
+            "configurePreset": "Windows-Gcc-Debug",
+            "inherits": [
+                "build-windows-only"
+            ]
+        },
+        {
+            "name": "Windows-Gcc-Release",
+            "displayName": "Windows Release Preset",
+            "configurePreset": "Windows-Gcc-Release",
+            "inherits": [
+                "build-windows-only"
+            ]
+        }
+    ]
+}
