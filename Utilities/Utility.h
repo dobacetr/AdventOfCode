@@ -96,7 +96,7 @@ namespace Utility
 
     template<typename T> using FuncTFromStr = T(const std::string&);
 
-    template <typename...ArgTypes, std::size_t...Index> std::tuple<ArgTypes...> ParseLineToTuple(const std::string& line, std::index_sequence<Index...>, const FuncTFromStr<ArgTypes>*...Funcs)
+    template <typename...ArgTypes, std::size_t...Index> std::tuple<ArgTypes...> ParseLineToTuple(const std::string& line, std::index_sequence<Index...>, FuncTFromStr<ArgTypes>*...Funcs)
     {
         std::vector<std::string> words = Split(line);
 
@@ -106,17 +106,17 @@ namespace Utility
     }
 
     template <typename...ArgTypes> std::tuple<ArgTypes...> 
-        ParseLine(const std::string& line, FuncTFromStr<ArgTypes>*...Funcs)
+        ParseLineToTuple(const std::string& line, FuncTFromStr<ArgTypes>*...Funcs)
     {
-        return ParseLine(line, std::make_integer_sequence<size_t, sizeof...(ArgTypes)>{}, Funcs...);
+        return ParseLineToTuple(line, std::make_integer_sequence<size_t, sizeof...(ArgTypes)>{}, Funcs...);
     }
 
-    template <typename...ArgTypes> std::tuple<ArgTypes...> ParseLine(const std::string& line)
+    template <typename...ArgTypes> std::tuple<ArgTypes...> ParseLineToTuple(const std::string& line)
     {
-        return ParseLine(line, FromString<ArgTypes>...);
+        return ParseLineToTuple(line, FromString<ArgTypes>...);
     }
 
-    template <typename T> std::vector<T> ParseLineToVector(const std::string& line, const FuncTFromStr<T>* Func)
+    template <typename T> std::vector<T> ParseLineToVector(const std::string& line, FuncTFromStr<T>* Func)
     {
         std::vector<std::string> words = Split(line);
 
@@ -140,7 +140,7 @@ namespace Utility
 
     template <typename...ArgTypes, std::size_t...Index> void ParseLineInto(const std::string& line,  std::index_sequence<Index...>, ArgTypes&...OutArgs)
     {
-        std::tuple<ArgTypes...> Result = ParseLine<ArgTypes...>(line);
+        std::tuple<ArgTypes...> Result = ParseLineToTuple<ArgTypes...>(line);
         ((OutArgs = std::get<Index>(Result)),...);
     }
 

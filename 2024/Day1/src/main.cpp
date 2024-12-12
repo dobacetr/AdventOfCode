@@ -7,6 +7,7 @@
 #include "Utility.h"
 
 #include <numeric>
+#include <algorithm>
 
 int main()
 {
