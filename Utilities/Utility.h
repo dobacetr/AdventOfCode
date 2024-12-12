@@ -2,7 +2,6 @@
 #include <tuple>
 #include <string>
 #include <vector>
-#include <array>
 #include <sstream>
 #include <functional>
 #include <utility>
@@ -30,6 +29,13 @@ namespace Utility
     {
         {std::cout<<t};
     };
+
+    template<typename tuple_t,IsContainer TContainer>
+    constexpr auto get_container_from_tuple(tuple_t&& tuple)
+    {
+        constexpr auto get_container = [](auto&& ... x){ return TContainer{std::forward<decltype(x)>(x) ... }; };
+        return std::apply(get_container, std::forward<tuple_t>(tuple));
+    }
 
     template <IsOutStreamable ArgType, IsOutStreamable...ArgTypes> void Print(std::ostream& ostream, const ArgType& Arg, const ArgTypes&... Args)
     {
@@ -75,8 +81,6 @@ namespace Utility
         }
     }
 
-
-
     std::vector<std::string> Split(const std::string& s)
     {
         std::stringstream ss(s);
@@ -92,8 +96,7 @@ namespace Utility
 
     template<typename T> using FuncTFromStr = T(const std::string&);
 
-    //template <typename...ArgTypes, std::size_t...Index> std::tuple<ArgTypes...> ParseLine(const std::string& line, std::index_sequence<Index...>, const std::function<ArgTypes(const std::string&)>&...Funcs)
-    template <typename...ArgTypes, std::size_t...Index> std::tuple<ArgTypes...> ParseLine(const std::string& line, std::index_sequence<Index...>, FuncTFromStr<ArgTypes>*...Funcs)
+    template <typename...ArgTypes, std::size_t...Index> std::tuple<ArgTypes...> ParseLineToTuple(const std::string& line, std::index_sequence<Index...>, const FuncTFromStr<ArgTypes>*...Funcs)
     {
         std::vector<std::string> words = Split(line);
 
@@ -101,8 +104,6 @@ namespace Utility
         
         return result;
     }
-
-    //template <typename...ArgTypes> std::tuple<ArgTypes...> ParseLine(const std::string& line, const std::function<ArgTypes(const std::string&)>&...Funcs)
 
     template <typename...ArgTypes> std::tuple<ArgTypes...> 
         ParseLine(const std::string& line, FuncTFromStr<ArgTypes>*...Funcs)
@@ -113,6 +114,28 @@ namespace Utility
     template <typename...ArgTypes> std::tuple<ArgTypes...> ParseLine(const std::string& line)
     {
         return ParseLine(line, FromString<ArgTypes>...);
+    }
+
+    template <typename T> std::vector<T> ParseLineToVector(const std::string& line, const FuncTFromStr<T>* Func)
+    {
+        std::vector<std::string> words = Split(line);
+
+        std::vector<T> values;
+        values.reserve(words.size());
+
+        for(const std::string& word : words)
+        {
+            const T value = Func(word);
+            values.push_back( value );
+        }
+
+        return values;
+    }
+
+    template <typename T> std::vector<T> ParseLineToVector(const std::string& line)
+    {
+        std::vector<std::string> words = Split(line);
+        return ParseLineToVector(line, FromString<T>);
     }
 
     template <typename...ArgTypes, std::size_t...Index> void ParseLineInto(const std::string& line,  std::index_sequence<Index...>, ArgTypes&...OutArgs)
@@ -148,6 +171,20 @@ namespace Utility
 
             return false;
         }
+    
+    template<typename T> std::vector<std::vector<T>> Parse(std::istream& istream){
+        std::vector<std::vector<T>> result;
+
+        std::string line;
+        while(std::getline(istream, line))
+        {
+            const std::vector<T> arrCurr = ParseLineToVector<T>(line);
+            result.push_back( arrCurr );
+
+        }
+
+        return result;
+    }
 
     template <IsResizableContainer...ArgTypes> 
         void Parse(std::istream& istream, ArgTypes&...Args) 
