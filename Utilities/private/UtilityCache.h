@@ -15,7 +15,7 @@ template<typename T> static constexpr std::array<std::string, static_cast<size_t
 }
 
 // Define static constexpr std::string GetString_UnCached(const T inEnum) to construct the cache of strings
-template<typename T> static constexpr std::string& GetString(const T InEnum)
+template<typename T> static std::string& GetString(const T InEnum)
 {
     static auto Strings = ConstructStrings<T>();
     return Strings[static_cast<size_t>(InEnum)];
