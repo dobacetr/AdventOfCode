@@ -6,7 +6,7 @@
 
 #include "Utility.h"
 
-template<Utility::IsContainer T> bool IsSafeLevels(const T& InLevels)
+template<Utility::Parse::IsContainer T> bool IsSafeLevels(const T& InLevels)
 {
     // branchless version
     int prevDiff = 0;
@@ -43,7 +43,7 @@ int main()
     // Define vectors of values to be read from input
 
     // Parse rows into arrays
-    std::vector<std::vector<int>> allLevels = Utility::Parse<int>(*inStream);
+    std::vector<std::vector<int>> allLevels = Utility::Parse::Parse<int>(*inStream);
 
     size_t safeCount = 0;
     for(const auto& levels:allLevels)

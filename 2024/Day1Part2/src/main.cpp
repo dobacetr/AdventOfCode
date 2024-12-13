@@ -23,7 +23,7 @@ int main()
         inStream = &file;
     }
 
-    Utility::Parse(*inStream, left, right);
+    Utility::Parse::Parse(*inStream, left, right);
 
     std::map<int, int> rightMap;
 

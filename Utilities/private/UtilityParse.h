@@ -8,6 +8,8 @@
 
 namespace Utility
 {
+namespace Parse
+{
     template <typename T> concept IsContainer = 
         requires (T t)
         {
@@ -196,10 +198,12 @@ namespace Utility
             ++idx;
         }
     }
+        
+}
 }
 
 // Can define custom conversions 
-template<> int Utility::FromString(const std::string& Token)
+template<> int Utility::Parse::FromString(const std::string& Token)
 {
     return std::stoi(Token);
 }
